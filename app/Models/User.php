@@ -46,4 +46,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function debateRooms()
+    {
+        return $this->belongsToMany(DebateRoom::class)
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
 }
