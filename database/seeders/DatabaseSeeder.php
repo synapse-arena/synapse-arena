@@ -2,24 +2,46 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\DebateRoom;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Buat 3 Akun Khusus Demo
+        $prompter = User::create([
+            'name' => 'Kreator (Prompter)',
+            'email' => 'prompter@demo.com',
+            'password' => Hash::make('password')
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $audience = User::create([
+            'name' => 'Pengunjung (Audience)',
+            'email' => 'audience@demo.com',
+            'password' => Hash::make('password')
+        ]);
+
+        $moderator = User::create([
+            'name' => 'Pengawas (Moderator)',
+            'email' => 'moderator@demo.com',
+            'password' => Hash::make('password')
+        ]);
+
+        // 2. Buat Ruang Debat Pameran
+        $room = DebateRoom::create([
+            'topic' => 'Mosi Pameran: Apakah AI Mengancam Masa Depan Pekerjaan IT?',
+            'max_rounds' => 3,
+            'status' => 'live' 
+        ]);
+
+        // 3. Masukkan ke Pivot Table beserta jabatan spesifiknya
+        $room->users()->attach([
+            $prompter->id => ['role' => 'prompter'],
+            $audience->id => ['role' => 'audience'],
+            $moderator->id => ['role' => 'moderator'],
         ]);
     }
 }
