@@ -173,29 +173,48 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('dashboard')->with('success', 'Ruangan dihapus.');
     })->name('arena.destroy');
 
-    // 11. FITUR BARU: FOLLOW-UP QUESTION DARI PROMPTER
+    // 11. FITUR BARU: FOLLOW-UP QUESTION DARI PROMPTER (TRY-CATCH MODE)
     Route::post('/arena/{id}/follow-up', function (Request $request, $id) {
-        $request->validate(['content' => 'required|string|max:1000']);
-        $room = DebateRoom::findOrFail($id);
-        $me = $room->users()->where('user_id', auth()->id())->first();
-        
-        if (!$me || $me->pivot->role !== 'prompter') abort(403);
+        try {
+            $request->validate([
+                'content' => 'required|string|max:1000'
+            ]);
 
-        // Simpan pertanyaan Prompter ke DB
-        Argument::create([
-            'debate_room_id' => $room->id,
-            'participant_id' => auth()->id(),
-            'stance' => 'prompter',
-            'turn_order' => 999, // Penanda order spesial
-            'content' => $request->content
-        ]);
+            $room = DebateRoom::findOrFail($id);
+            $me = $room->users()->where('user_id', auth()->id())->first();
+            
+            // Cek apakah yang ngeklik beneran Prompter
+            if (!$me || $me->pivot->role !== 'prompter') {
+                return response()->json(['error' => 'Akses Ditolak'], 403);
+            }
 
-        // Panggil AI khusus untuk menjawab Follow Up
-        ProcessAiDebate::dispatch($room->id, 999, 'ai_answer');
-        
-        return response()->json(['success' => true]);
-    });
+            $lastTurn = Argument::where('debate_room_id', $room->id)->max('turn_order') ?? 0;
+            $newTurnOrder = $lastTurn + 1;
 
+            // Simpan ke DB
+            Argument::create([
+                'debate_room_id' => $room->id,
+                'participant_id' => null, 
+                'user_id' => auth()->id(), // Pastikan kolom ini sudah masuk $fillable di model Argument
+                'stance' => 'prompter',
+                'turn_order' => $newTurnOrder,
+                'content' => $request->content
+            ]);
+
+            // Panggil AI
+            ProcessAiDebate::dispatch($room->id, $newTurnOrder + 1, 'ai_answer');
+            
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            // JEBAKAN ERROR: Paksa Laravel menampilkan masalah aslinya ke F12!
+            return response()->json([
+                'PESAN_ERROR_ASLI' => $e->getMessage(),
+                'FILE_YANG_ERROR' => $e->getFile(),
+                'BARIS_KE' => $e->getLine()
+            ], 500);
+        }
+    })->name('arena.followup');
 });
 
 require __DIR__.'/auth.php';

@@ -40,10 +40,14 @@ class ProcessAiDebate implements ShouldQueue
         
         $lastArgument = null;
         foreach ($history as $arg) {
-            // Jangan sertakan kesimpulan ke dalam konteks Prompt
             if ($arg->stance !== 'kesimpulan') {
-                $contextString .= strtoupper($arg->stance) . ": " . $arg->content . "\n";
-                // Simpan argumen terakhir untuk referensi respon AI
+                // FORMAT KHUSUS AGAR AI PEKA TERHADAP INSTRUKSI PROMPTER
+                if ($arg->stance === 'prompter') {
+                    $contextString .= "\n[INSTRUKSI / PERTANYAAN SUTRADARA MANUSIA]: " . $arg->content . "\n\n";
+                } else {
+                    $contextString .= strtoupper($arg->stance) . ": " . $arg->content . "\n";
+                }
+                
                 if ($arg->stance !== 'prompter') {
                     $lastArgument = $arg->content;
                 }
@@ -60,17 +64,17 @@ class ProcessAiDebate implements ShouldQueue
             $systemPrompt = "Anda adalah moderator. Baca percakapan di atas, lalu berikan HANYA 1 kalimat kesimpulan pamungkas (sangat singkat, padat) yang merangkum hasil akhir pemikiran mereka.";
             $fullPrompt = $contextString . "\nBerikan 1 kalimat kesimpulan Anda.";
         } 
-        elseif ($this->stance === 'ai_answer') { // JIKA INI JAWABAN UNTUK PERTANYAAN PROMPTER
-            $systemPrompt = "Anda mewakili seluruh pakar AI dalam forum ini. Prompter/Sutradara baru saja mengajukan pertanyaan atau tanggapan lanjutan setelah sesi selesai.\n";
+        elseif ($this->stance === 'ai_answer') { 
+            // JIKA INI JAWABAN UNTUK PERTANYAAN PROMPTER
+            $systemPrompt = "Anda mewakili seluruh pakar AI dalam forum ini. Sutradara/Prompter Manusia baru saja mengajukan instruksi atau pertanyaan lanjutan.\n";
             $systemPrompt .= "Jawablah dengan komprehensif, bijak, dan berdasarkan konteks perdebatan/diskusi yang sudah terjadi di atas.\n";
             $systemPrompt .= "Panjang maksimal 2 paragraf. Gunakan tanda bintang ganda (**kata penting**) untuk highlight.";
-            $fullPrompt = $contextString . "\nSilakan jawab pertanyaan Prompter tersebut secara langsung.";
+            $fullPrompt = $contextString . "\nSilakan jawab instruksi Sutradara tersebut secara langsung.";
         }
         else if ($room->mode === 'discussion') {
             $systemPrompt = "Anda adalah Pakar Ahli ke-" . $this->turnOrder . " dalam diskusi.\n";
             $systemPrompt .= "Tugas Anda: Lanjutkan, perluas, atau berikan sudut pandang baru yang MENDUKUNG ide pemikir sebelumnya.\n";
             
-            // PERINTAH AGAR AI NYAMBUNG SATU SAMA LAIN
             if ($lastArgument && $this->turnOrder > 1) {
                 $systemPrompt .= "WAJIB KONEKSI: Awali kalimat Anda dengan secara spesifik mengutip/merujuk pada ide spesifik dari pakar sebelumnya, lalu kembangkan ide tersebut!\n";
             }
@@ -83,7 +87,6 @@ class ProcessAiDebate implements ShouldQueue
         else {
             $systemPrompt = "Anda adalah debater di pihak " . strtoupper($this->stance) . ".\n";
             
-            // PERINTAH AGAR AI NYAMBUNG SATU SAMA LAIN (DEBAT)
             if ($lastArgument && $this->turnOrder > 1) {
                 $systemPrompt .= "WAJIB KONEKSI: Awali kalimat Anda dengan menyerang atau membantah secara langsung poin spesifik yang baru saja disampaikan oleh lawan Anda sebelumnya!\n";
             }
@@ -152,7 +155,8 @@ class ProcessAiDebate implements ShouldQueue
         // ==========================================
         if ($this->stance === 'kesimpulan') {
             $room->update(['status' => 'archived']);
-        } elseif ($this->stance !== 'ai_answer') { // Jangan jadwalkan argumen baru jika ini hanya sesi tanya-jawab lanjutan
+        } elseif ($this->stance !== 'ai_answer') { 
+            // Jangan jadwalkan perdebatan otomatis jika ini adalah mode sesi tanya jawab
             $maxTurns = $room->max_rounds * 2;
             if ($this->turnOrder < $maxTurns) {
                 $nextStance = ($this->stance === 'pro') ? 'kontra' : 'pro';
@@ -163,18 +167,18 @@ class ProcessAiDebate implements ShouldQueue
         }
     }
 
-    // ==========================================
-    // FUNGSI-FUNGSI API AI
-    // ==========================================
     private function callGeminiApi($prompt, $systemInstruction) {
-        $apiKey = env('GEMINI_API_KEY');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" . $apiKey;
-        $response = Http::post($url, [
-            'system_instruction' => ['parts' => ['text' => $systemInstruction]],
-            'contents' => [['parts' => [['text' => $prompt]]]]
-        ]);
-        if ($response->successful()) return $response->json('candidates.0.content.parts.0.text');
-        throw new \Exception("Gagal: " . $response->body());
+            $apiKey = env('GEMINI_API_KEY');
+            
+            // KEMBALIKAN KE MODEL ASLIMU DI SINI (gemini-3.5-flash)
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" . $apiKey;
+            
+            $response = Http::post($url, [
+                'system_instruction' => ['parts' => ['text' => $systemInstruction]],
+                'contents' => [['parts' => [['text' => $prompt]]]]
+            ]);
+            if ($response->successful()) return $response->json('candidates.0.content.parts.0.text');
+            throw new \Exception("Gagal: " . $response->body());
     }
 
     private function callGroqApi($prompt, $systemInstruction) {

@@ -29,7 +29,6 @@
                 @if($userRole === 'prompter')
                     <form action="{{ route('arena.start', $room->id) }}" method="POST" class="inline" id="btn-pemicu">
                         @csrf
-                        <!-- PERBAIKAN WARNA TOMBOL: Gradasi menyala dengan teks terang -->
                         <button type="submit" class="btn btn-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold border-none hover:scale-105 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.6)]">
                             🚀 Mulai Pemicu AI
                         </button>
@@ -55,7 +54,7 @@
                             </div>
                         </div>
 
-                        <!-- Fitur Tanya Lanjutan Khusus Prompter (Tersembunyi sampai Kesimpulan Keluar) -->
+                        <!-- Fitur Tanya Lanjutan Khusus Prompter -->
                         <div id="follow-up-container" class="hidden bg-gray-900 border-t-2 border-indigo-500 p-4 shrink-0 z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
                             <h4 class="font-bold text-indigo-400 mb-2 text-sm uppercase tracking-wider flex items-center gap-2">
                                 🎙️ Tanya / Tanggapan Lanjutan (Khusus Prompter)
@@ -74,7 +73,6 @@
                 </div>
 
                 <div class="space-y-4 flex flex-col h-[780px]">
-                    
                     <div class="card bg-gradient-to-br from-gray-800 to-gray-900 shadow-2xl border border-gray-700 shrink-0">
                         <div class="card-body p-4 items-center text-center">
                             <h2 class="card-title text-gray-400 text-xs tracking-widest font-bold">GILIRAN AI</h2>
@@ -155,7 +153,6 @@
             let lastArgumentCount = 0;
             const maxTurns = {{ $room->max_rounds * 2 }};
 
-            // Trik Submit Tanya Lanjutan
             const followUpForm = document.getElementById('follow-up-form');
             if (followUpForm) {
                 followUpForm.addEventListener('submit', function(e) {
@@ -170,7 +167,7 @@
                         body: JSON.stringify({ content: text })
                     }).then(() => {
                         input.value = '';
-                        fetchArguments(); // Langsung render
+                        fetchArguments();
                     });
                 });
             }
@@ -186,19 +183,16 @@
                 fetch(`/arena/${roomId}/arguments`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(response => response.json())
                 .then(data => {
-                    // Jangan hitung stance promter/ai_answer/kesimpulan untuk nomor Giliran
                     const actualTurns = data.filter(d => !['kesimpulan', 'prompter', 'ai_answer'].includes(d.stance)).length;
                     turnCounter.innerText = actualTurns;
 
                     const hasConclusion = data.some(d => d.stance === 'kesimpulan');
                     
-                    // Sembunyikan Tombol Pemicu & Munculkan Form Tanya Lanjutan kalau Kesimpulan Keluar
                     if (hasConclusion && myRole === 'prompter') {
                         if (btnPemicu) btnPemicu.classList.add('hidden');
                         if (followUpContainer) followUpContainer.classList.remove('hidden');
                     }
 
-                    // Logika Loading Animasi (Cek apakah ada request prompter yang belum dibalas AI)
                     const lastStance = data.length > 0 ? data[data.length - 1].stance : null;
                     if ((actualTurns > 0 && actualTurns < maxTurns && !hasConclusion) || lastStance === 'prompter') {
                         loadingIndicator.classList.remove('hidden');
@@ -219,7 +213,6 @@
                         const newArgs = data.slice(lastArgumentCount);
                         
                         newArgs.forEach(arg => {
-                            // 1. RENDER KESIMPULAN
                             if (arg.stance === 'kesimpulan') {
                                 debateBox.innerHTML += `
                                     <div class="mt-8 mb-4 w-full">
@@ -232,7 +225,6 @@
                                 return; 
                             }
 
-                            // 2. RENDER PERTANYAAN PROMPTER
                             if (arg.stance === 'prompter') {
                                 debateBox.innerHTML += `
                                     <div class="mt-6 mb-2 w-full flex justify-center">
@@ -245,7 +237,6 @@
                                 return;
                             }
 
-                            // 3. RENDER JAWABAN AI FOLLOW-UP
                             if (arg.stance === 'ai_answer') {
                                 let formatted = arg.content.replace('🤖 [Jawaban Panelis AI]\n\n', '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<span class="text-warning font-black bg-warning/10 px-1 rounded">$1</span>');
                                 debateBox.innerHTML += `
@@ -262,7 +253,6 @@
                                 return;
                             }
 
-                            // 4. RENDER DEBAT / DISKUSI BIASA
                             const isPro = arg.stance === 'pro'; 
                             const isDiscussionMode = '{{ $room->mode }}' === 'discussion';
                             
