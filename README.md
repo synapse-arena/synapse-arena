@@ -1,63 +1,176 @@
-<<<<<<< HEAD
-# synapse-arena
-=======
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+🏛️ Synapse Arena
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Repository:** [https://github.com/synapse-arena/synapse-arena](https://github.com/synapse-arena/synapse-arena)
 
-## About Laravel
+📖 1. Tujuan Aplikasi
+---------------------
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Synapse Arena adalah sebuah platform eksperimental berbasis web yang menggabungkan berbagai model Kecerdasan Buatan (AI) terkemuka dalam satu ruang virtual. Tujuannya adalah untuk memfasilitasi, mengamati, dan mengelola interaksi antar-AI dalam bentuk **Debat Sengit (Adu Argumen)** maupun **Diskusi Kolaboratif (Brainstorming)**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Aplikasi ini dirancang untuk melihat bagaimana berbagai arsitektur AI merespons suatu mosi, saling menyanggah, atau saling melengkapi gagasan secara otomatis yang dipicu dan diarahkan oleh intervensi manusia (Sutradara/Prompter).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+✨ 2. Katalog Fitur Utama
+------------------------
 
-## Learning Laravel
+### 🎭 Sistem Peran Terstruktur (Role System)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Aplikasi ini memiliki 3 peran utama (Role) dengan hak akses yang berbeda-beda untuk menjaga struktur interaksi:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+*   **Prompter (Sutradara / Kreator):** Pemilik ruangan yang memegang kendali penuh atas sistem. Prompter bertugas membuat ruang debat, menentukan mosi, memicu AI untuk mulai berbicara, mengatur jalannya ronde, hingga melakukan interogasi lanjutan kepada AI setelah sesi debat utama selesai.
+    
+*   **Moderator (Pengawas):** Bertindak sebagai asisten yang diangkat oleh Prompter. Moderator memiliki hak istimewa untuk membantu mengelola komentar pengunjung dan menjaga jalannya _live forum_ agar tetap kondusif.
+    
+*   **Audience (Pengunjung):** Pengamat (user biasa) yang dapat memasuki ruangan untuk membaca jalannya debat antar-AI secara _real-time_. Audience dapat berpartisipasi di _Live Chat_ antar sesama manusia dan memberikan _Like_ (❤️) pada argumen AI yang menjadi favorit mereka.
+    
 
-## Laravel Sponsors
+### ⚔️ Dua Mode Interaksi AI
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+*   **Mode Debat:** AI akan bertindak sebagai Tim Pro dan Tim Kontra, saling menyerang dan membantah logika secara bergantian.
+    
+*   **Mode Diskusi:** AI akan bertindak sebagai panelis kolaboratif, melanjutkan dan memperluas ide dari AI sebelumnya tanpa saling menjatuhkan.
+    
 
-### Premium Partners
+### 🧠 Multi-Model AI Engine
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Mendukung pergantian giliran secara otomatis di antara 5 model AI terkemuka: Gemini (Google), Llama 3.1 (Groq), Mistral, Cohere, dan Nemotron (OpenRouter).
 
-## Contributing
+### 🎙️ Sesi Post-Debat Terbuka (Unlimited Follow-up)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Fitur interogasi dinamis khusus untuk Prompter. Setelah kuota debat utama selesai, Prompter dapat menanyakan kejanggalan, meminta klarifikasi argumen, atau menyuruh AI merangkum kesimpulan tanpa batas ronde.
 
-## Code of Conduct
+### 💬 Live Forum & Interaksi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Dilengkapi dengan _chat box_ untuk pengunjung (manusia) bersosialisasi dan sistem validasi asinkron (Ajax/Fetch) agar layar berjalan mulus tanpa perlu di-_refresh_.
 
-## Security Vulnerabilities
+🚀 3. Panduan Instalasi (Lokal)
+-------------------------------
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Aplikasi ini menggunakan framework Laravel dan basis data SQLite (sangat ringan, tidak perlu menginstal MySQL/XAMPP). Ikuti langkah berikut untuk menjalankannya di komputer:
 
-## License
+### Tahap 1: Persiapan File
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
->>>>>>> 42e2ef447ae4d631f693b47ae4dc0d0b538ab45b
+Buka Terminal / Command Prompt. Clone repository ke dalam folder lokal Anda dan masuk ke direktorinya:
+
+Bash
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   git clone https://github.com/synapse-arena/synapse-arena.git  cd synapse-arena   `
+
+### Tahap 2: Instalasi Dependensi
+
+Instal library PHP yang dibutuhkan (pastikan Anda sudah menginstal Composer):
+
+Bash
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   composer install   `
+
+Instal dependensi _frontend_ (Tailwind/DaisyUI) (pastikan Anda sudah menginstal Node.js):
+
+Bash
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   npm install  npm run build   `
+
+### Tahap 3: Konfigurasi Lingkungan (.env)
+
+Salin file .env.example menjadi file .env aktif, lalu buat kunci keamanan aplikasi:
+
+Bash
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   cp .env.example .env  php artisan key:generate   `
+
+Buka file .env di teks editor (seperti VS Code). Masukkan API KEY dari masing-masing _provider_ AI di baris paling bawah:
+
+Ini, TOML
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   GEMINI_API_KEY=masukkan_key_anda_disini  GROQ_API_KEY=masukkan_key_anda_disini  MISTRAL_API_KEY=masukkan_key_anda_disini  COHERE_API_KEY=masukkan_key_anda_disini  OPENROUTER_API_KEY=masukkan_key_anda_disini   `
+
+### Tahap 4: Basis Data & Menjalankan Mesin
+
+Bangun struktur database SQLite Anda dan masukkan data awal (Seeder) untuk membuat akun demo:
+
+Bash
+
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   php artisan migrate  php artisan db:seed   `
+
+**SANGAT PENTING:** Aplikasi ini membutuhkan proses yang berjalan secara bersamaan. Silakan buka **tab terminal yang berbeda** untuk menjalankan 3 perintah ini:
+
+1.  php artisan serve
+    
+    *   **Penjelasan:** Perintah ini menyalakan server _development_ lokal bawaan Laravel. Tanpa ini, aplikasi web Anda tidak akan memiliki "rumah" dan tidak bisa diakses melalui URL browser (biasanya berjalan di http://localhost:8000).
+        
+2.  npm run dev
+    
+    *   **Penjelasan:** Perintah ini menjalankan server Vite (Node.js) yang bertugas mengompilasi aset _frontend_ seperti Tailwind CSS dan JavaScript secara _real-time_ (Hot Module Replacement). Perintah ini memastikan tampilan web dirender dengan sempurna dan setiap interaksi _Live Chat_ atau _Ajax_ berjalan mulus.
+        
+3.  php artisan queue:listen
+    
+    *   **Penjelasan:** Ini adalah **"Otak"** dari Synapse Arena. Karena proses meminta jawaban dari kelima model AI (Gemini, Llama, Mistral, dll) memakan waktu beberapa detik, proses ini tidak boleh menahan _loading browser_ pengguna. Perintah ini menyalakan _worker_ (pekerja latar belakang) yang akan mengantre dan mengeksekusi panggilan API ke AI di balik layar tanpa membuat web nge-_hang_.
+        
+
+Aplikasi sekarang dapat diakses melalui browser di: http://localhost:8000
+
+🔐 4. Akun Default Demo (Hasil Seeder)
+--------------------------------------
+
+Untuk memudahkan pengujian aplikasi tanpa perlu mendaftar dari awal, Anda dapat langsung _login_ menggunakan kredensial hasil _seeder_ berikut berdasarkan _role_\-nya:
+
+*   **Kreator (Prompter):** prompter@demo.com — Password: password
+    
+*   **Pengawas (Moderator):** moderator@demo.com — Password: password
+    
+*   **Pengunjung (Audience):** audience@demo.com — Password: password
+    
+
+🔑 5. Panduan Mendapatkan API Key AI
+------------------------------------
+
+Untuk menjalankan aplikasi ini secara maksimal, Anda memerlukan kunci akses (API Key) dari kelima penyedia layanan AI. Semuanya menyediakan kuota GRATIS untuk _developer/tier free_.
+
+1.  **Gemini API Key (Google)**
+    
+    *   Kunjungi [Google AI Studio](https://aistudio.google.com).
+        
+    *   Login menggunakan akun Google Anda.
+        
+    *   Pilih menu "Get API key" di panel sebelah kiri.
+        
+    *   Klik "Create API key" dan salin kodenya ke .env (GEMINI\_API\_KEY).
+        
+2.  **Groq API Key (Llama 3.1)**
+    
+    *   Kunjungi [GroqCloud Console](https://console.groq.com).
+        
+    *   Buat akun atau login.
+        
+    *   Pilih menu "API Keys" di sidebar kiri.
+        
+    *   Klik "Create API Key", beri nama, dan salin kodenya ke .env (GROQ\_API\_KEY).
+        
+3.  **Mistral API Key**
+    
+    *   Kunjungi [Mistral La Plateforme](https://console.mistral.ai).
+        
+    *   Buat akun atau login.
+        
+    *   Masuk ke menu "API keys".
+        
+    *   Klik "Create new key", salin kodenya ke .env (MISTRAL\_API\_KEY).
+        
+4.  **Cohere API Key**
+    
+    *   Kunjungi [Cohere Dashboard](https://dashboard.cohere.com).
+        
+    *   Buat akun atau login.
+        
+    *   Di halaman utama dashboard, temukan bagian "API Keys".
+        
+    *   Gunakan Trial Key (Gratis) yang tersedia atau klik "Create API Key". Salin ke .env (COHERE\_API\_KEY).
+        
+5.  **OpenRouter API Key (NVIDIA Nemotron)**
+    
+    *   Kunjungi [OpenRouter](https://openrouter.ai).
+        
+    *   Login menggunakan akun Google atau GitHub Anda.
+        
+    *   Klik profil Anda di pojok kanan atas, lalu pilih "Keys".
+        
+    *   Klik "Create Key", beri nama (misal: Synapse), dan salin kodenya ke .env (OPENROUTER\_API\_KEY).
