@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\DebateRoom;
@@ -10,10 +11,17 @@ use App\Jobs\ProcessAiDebate;
 use App\Http\Controllers\ProfileController;
 
 // PERBAIKAN: Langsung arahkan ke Dashboard
+=======
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ArenaController;
+
+// Arahkan Root ke Dashboard
+>>>>>>> 42e2ef447ae4d631f693b47ae4dc0d0b538ab45b
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
+<<<<<<< HEAD
 // DASHBOARD (Menarik Ruangan & Statistik Sistem)
 Route::get('/dashboard', function () {
     $myRooms = DebateRoom::whereHas('users', function($q) {
@@ -42,10 +50,20 @@ Route::get('/panduan', function () {
 
 Route::middleware('auth')->group(function () {
     
+=======
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // Dashboard & Panduan
+    Route::get('/dashboard', [ArenaController::class, 'dashboard'])->name('dashboard');
+    Route::get('/panduan', [ArenaController::class, 'panduan'])->name('panduan');
+
+    // Profile Routes (Bawaan Breeze)
+>>>>>>> 42e2ef447ae4d631f693b47ae4dc0d0b538ab45b
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+<<<<<<< HEAD
     // 1. Simpan Ruangan
     Route::post('/arena/store', function (Request $request) {
         $request->validate([
@@ -196,6 +214,24 @@ Route::middleware('auth')->group(function () {
         return response()->json(['success' => true]);
     });
 
+=======
+    // Arena & Debat Routes
+    Route::post('/arena/store', [ArenaController::class, 'store'])->name('arena.store');
+    Route::get('/arena/{id}', [ArenaController::class, 'show'])->name('arena.show');
+    Route::get('/arena/{id}/arguments', [ArenaController::class, 'getArguments'])->name('arena.arguments');
+    Route::post('/arena/{id}/start', [ArenaController::class, 'startAi'])->name('arena.start');
+    Route::post('/arena/{id}/promote/{userId}', [ArenaController::class, 'promote'])->name('arena.promote');
+    
+    // Fitur Interaksi (Like & Komentar)
+    Route::post('/arena/{id}/argument/{argId}/like', [ArenaController::class, 'toggleLike']);
+    Route::post('/arena/{id}/comment', [ArenaController::class, 'storeComment']);
+    Route::get('/arena/{id}/comments', [ArenaController::class, 'getComments']);
+    Route::delete('/arena/{id}/comment/{commentId}', [ArenaController::class, 'destroyComment']);
+    
+    // Manajemen Ruangan & Follow-Up AI
+    Route::delete('/arena/{id}', [ArenaController::class, 'destroy'])->name('arena.destroy');
+    Route::post('/arena/{id}/follow-up', [ArenaController::class, 'followUp'])->name('arena.followup');
+>>>>>>> 42e2ef447ae4d631f693b47ae4dc0d0b538ab45b
 });
 
 require __DIR__.'/auth.php';
