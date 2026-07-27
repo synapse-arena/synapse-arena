@@ -1,4 +1,5 @@
-🏛️ Synapse Arena
+Synapse Arena
+---------------------
 
 **Repository:** [https://github.com/synapse-arena/synapse-arena](https://github.com/synapse-arena/synapse-arena)
 
@@ -50,63 +51,70 @@ Aplikasi ini menggunakan framework Laravel dan basis data SQLite (sangat ringan,
 ### Tahap 1: Persiapan File
 
 Buka Terminal / Command Prompt. Clone repository ke dalam folder lokal Anda dan masuk ke direktorinya:
-
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   git clone https://github.com/synapse-arena/synapse-arena.git  cd synapse-arena   `
+```
+git clone https://github.com/synapse-arena/synapse-arena.git  
+cd synapse-arena   
+```
 
 ### Tahap 2: Instalasi Dependensi
 
 Instal library PHP yang dibutuhkan (pastikan Anda sudah menginstal Composer):
-
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   composer install   `
-
+```
+composer install   
+```
 Instal dependensi _frontend_ (Tailwind/DaisyUI) (pastikan Anda sudah menginstal Node.js):
-
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   npm install  npm run build   `
+```
+npm install
+npm run build  
+```
 
 ### Tahap 3: Konfigurasi Lingkungan (.env)
 
 Salin file .env.example menjadi file .env aktif, lalu buat kunci keamanan aplikasi:
-
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   cp .env.example .env  php artisan key:generate   `
+```
+cp .env.example .env
+php artisan key:generate   
+```
 
 Buka file .env di teks editor (seperti VS Code). Masukkan API KEY dari masing-masing _provider_ AI di baris paling bawah:
-
-Ini, TOML
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   GEMINI_API_KEY=masukkan_key_anda_disini  GROQ_API_KEY=masukkan_key_anda_disini  MISTRAL_API_KEY=masukkan_key_anda_disini  COHERE_API_KEY=masukkan_key_anda_disini  OPENROUTER_API_KEY=masukkan_key_anda_disini   `
+```
+GEMINI_API_KEY=masukkan_key_anda_disini
+GROQ_API_KEY=masukkan_key_anda_disini
+MISTRAL_API_KEY=masukkan_key_anda_disini
+COHERE_API_KEY=masukkan_key_anda_disini
+OPENROUTER_API_KEY=masukkan_key_anda_disini
+```
 
 ### Tahap 4: Basis Data & Menjalankan Mesin
 
 Bangun struktur database SQLite Anda dan masukkan data awal (Seeder) untuk membuat akun demo:
-
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   php artisan migrate  php artisan db:seed   `
+```
+php artisan migrate
+php artisan db:seed
+```
 
 **SANGAT PENTING:** Aplikasi ini membutuhkan proses yang berjalan secara bersamaan. Silakan buka **tab terminal yang berbeda** untuk menjalankan 3 perintah ini:
 
-1.  php artisan serve
-    
-    *   **Penjelasan:** Perintah ini menyalakan server _development_ lokal bawaan Laravel. Tanpa ini, aplikasi web Anda tidak akan memiliki "rumah" dan tidak bisa diakses melalui URL browser (biasanya berjalan di http://localhost:8000).
-        
-2.  npm run dev
-    
-    *   **Penjelasan:** Perintah ini menjalankan server Vite (Node.js) yang bertugas mengompilasi aset _frontend_ seperti Tailwind CSS dan JavaScript secara _real-time_ (Hot Module Replacement). Perintah ini memastikan tampilan web dirender dengan sempurna dan setiap interaksi _Live Chat_ atau _Ajax_ berjalan mulus.
-        
-3.  php artisan queue:listen
-    
-    *   **Penjelasan:** Ini adalah **"Otak"** dari Synapse Arena. Karena proses meminta jawaban dari kelima model AI (Gemini, Llama, Mistral, dll) memakan waktu beberapa detik, proses ini tidak boleh menahan _loading browser_ pengguna. Perintah ini menyalakan _worker_ (pekerja latar belakang) yang akan mengantre dan mengeksekusi panggilan API ke AI di balik layar tanpa membuat web nge-_hang_.
+1. 
+```
+php artisan serve
+```
+**Penjelasan:** Perintah ini menyalakan server _development_ lokal bawaan Laravel. Tanpa ini, aplikasi web Anda tidak akan memiliki "rumah" dan tidak bisa diakses melalui URL browser (biasanya berjalan di http://localhost:8000).
+
+2.
+```
+npm run dev
+```
+**Penjelasan:** Perintah ini menjalankan server Vite (Node.js) yang bertugas mengompilasi aset _frontend_ seperti Tailwind CSS dan JavaScript secara _real-time_ (Hot Module Replacement). Perintah ini memastikan tampilan web dirender dengan sempurna dan setiap interaksi _Live Chat_ atau _Ajax_ berjalan mulus.
+
+3.
+```        
+php artisan queue:listen
+``` 
+**Penjelasan:** Ini adalah **"Otak"** dari Synapse Arena. Karena proses meminta jawaban dari kelima model AI (Gemini, Llama, Mistral, dll) memakan waktu beberapa detik, proses ini tidak boleh menahan _loading browser_ pengguna. Perintah ini menyalakan _worker_ (pekerja latar belakang) yang akan mengantre dan mengeksekusi panggilan API ke AI di balik layar tanpa membuat web nge-_hang_.
         
 
-Aplikasi sekarang dapat diakses melalui browser di: http://localhost:8000
+Aplikasi sekarang dapat diakses melalui browser di: http://localhost:8000/login
 
 🔐 4. Akun Default Demo (Hasil Seeder)
 --------------------------------------
@@ -174,3 +182,7 @@ Untuk menjalankan aplikasi ini secara maksimal, Anda memerlukan kunci akses (API
     *   Klik profil Anda di pojok kanan atas, lalu pilih "Keys".
         
     *   Klik "Create Key", beri nama (misal: Synapse), dan salin kodenya ke .env (OPENROUTER\_API\_KEY).
+  
+Additional Documentation (Catalogue, ERD, Userflow)
+--------------------------
+    *   https://drive.google.com/drive/folders/1jwKOiX_-eA7keZ_Rq6YZIARleDwVoKUU?usp=sharing
