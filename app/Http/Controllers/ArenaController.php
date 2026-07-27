@@ -1,31 +1,40 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\DebateRoom;
 use App\Models\Argument;
 use App\Models\User;
 use App\Jobs\ProcessAiDebate;
+use App\Http\Requests\StoreRoomRequest;
+use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\FollowUpRequest;
 
 class ArenaController extends Controller
 {
-    // DASHBOARD
+    // DASHBOARD (Dengan Eager Loading & Caching untuk Optimasi Performa)
     public function dashboard()
     {
-        $myRooms = DebateRoom::whereHas('users', function($q) {
+        // Eager Loading relasi 'users' untuk mencegah query N+1
+        $myRooms = DebateRoom::with('users')->whereHas('users', function($q) {
             $q->where('user_id', auth()->id())->where('role', 'prompter');
         })->orderBy('created_at', 'desc')->get();
 
-        $otherRooms = DebateRoom::whereDoesntHave('users', function($q) {
+        $otherRooms = DebateRoom::with('users')->whereDoesntHave('users', function($q) {
             $q->where('user_id', auth()->id())->where('role', 'prompter');
         })->orderBy('created_at', 'desc')->get();
         
-        $stats = [
-            'total_rooms' => DebateRoom::count(),
-            'total_args' => Argument::whereNotNull('participant_id')->orWhereNotNull('stance')->count(),
-            'total_users' => User::count(),
-        ];
+        // Laravel Cache untuk statistik sistem (disimpan selama 10 menit)
+        $stats = Cache::remember('dashboard_system_stats', 600, function () {
+            return [
+                'total_rooms' => DebateRoom::count(),
+                'total_args' => Argument::whereNotNull('participant_id')->orWhereNotNull('stance')->count(),
+                'total_users' => User::count(),
+            ];
+        });
         
         return view('dashboard', compact('myRooms', 'otherRooms', 'stats'));
     }
@@ -36,15 +45,9 @@ class ArenaController extends Controller
         return view('panduan');
     }
 
-    // 1. Simpan Ruangan
-    public function store(Request $request)
+    // 1. Simpan Ruangan (Menggunakan Form Request)
+    public function store(StoreRoomRequest $request)
     {
-        $request->validate([
-            'topic' => 'required|string|max:255',
-            'mode' => 'required|in:debate,discussion',
-            'max_rounds' => 'required|integer|min:1|max:10' 
-        ]);
-        
         $room = DebateRoom::create([
             'topic' => $request->topic,
             'mode' => $request->mode,
@@ -60,7 +63,7 @@ class ArenaController extends Controller
     // 2. Masuk Ruangan
     public function show($id)
     {
-        $room = DebateRoom::findOrFail($id);
+        $room = DebateRoom::with('users')->findOrFail($id);
         
         $membership = $room->users()->where('user_id', auth()->id())->first();
         if (!$membership) {
@@ -73,10 +76,10 @@ class ArenaController extends Controller
         return view('arena.show', compact('room', 'userRole'));
     }
 
-    // 3. Tarik Argumen (AJAX)
+    // 3. Tarik Argumen (Eager Loading User untuk mencegah N+1)
     public function getArguments($id)
     {
-        $args = Argument::where('debate_room_id', $id)->orderBy('created_at', 'asc')->get();
+        $args = Argument::with('user')->where('debate_room_id', $id)->orderBy('created_at', 'asc')->get();
         
         $args->transform(function($arg) {
             $arg->likes_count = DB::table('argument_likes')->where('argument_id', $arg->id)->count();
@@ -126,12 +129,15 @@ class ArenaController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // 7. Simpan Komentar
-    public function storeComment(Request $request, $id)
+    // 7. Simpan Komentar (Menggunakan Form Request)
+    public function storeComment(StoreCommentRequest $request, $id)
     {
-        $request->validate(['content' => 'required|string|max:500']);
         DB::table('comments')->insert([
-            'debate_room_id' => $id, 'user_id' => auth()->id(), 'content' => $request->content, 'created_at' => now(), 'updated_at' => now(),
+            'debate_room_id' => $id, 
+            'user_id' => auth()->id(), 
+            'content' => $request->content, 
+            'created_at' => now(), 
+            'updated_at' => now(),
         ]);
         return response()->json(['success' => true]);
     }
@@ -173,14 +179,10 @@ class ArenaController extends Controller
         return redirect()->route('dashboard')->with('success', 'Ruangan dihapus.');
     }
 
-    // 11. Follow-Up Question dari Prompter
-    public function followUp(Request $request, $id)
+    // 11. Follow-Up Question dari Prompter (Menggunakan Form Request)
+    public function followUp(FollowUpRequest $request, $id)
     {
         try {
-            $request->validate([
-                'content' => 'required|string|max:1000'
-            ]);
-
             $room = DebateRoom::findOrFail($id);
             $me = $room->users()->where('user_id', auth()->id())->first();
             
